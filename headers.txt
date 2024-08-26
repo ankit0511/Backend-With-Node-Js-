@@ -1,0 +1,42 @@
+headers are of 4 types
+
+1 Request Headers - these are the haeders where the data os coming from client 
+2 Response Header = where the data comig From servers 
+3 Representation Header  = these are the headers which tell us that data are in which encoding 
+4 Payload Headers  = data 
+
+there are aso so many headers 
+
+most Common Headers --> 
+Accept -- it tells that we are going to accept which data 
+User Agent -- it tell the data is coming from which source 
+Auth -- 
+Content Type -- What data we are sending 
+Coockie 
+
+
+CORS and Security Are Also there 
+
+
+HTTP Methods 
+
+basic Set of operations that can be used to 
+interact with server 
+
+GET -- To Retrive Resource 
+HEAD -- No message body .. it will only return users 
+OPTIONS -- what operations are availabe 
+TRACE -- loopback test ( to get same data )  mostly used in debugging 
+DELETE -- to delete the resource 
+PUT -- replace the resource
+POST -- interact with resource 
+PATCH -- change part of resource 
+
+
+HTTP Status Code
+
+1xx- Informational Codes 
+2xx - Success 
+3xx - Rediraction 
+4xx - Client Error 
+5xx - Server Error 
