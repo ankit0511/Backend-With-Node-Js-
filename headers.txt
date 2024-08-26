@@ -1,4 +1,4 @@
-headers are of 4 types
+Headers are of 4 types
 
 1 Request Headers - these are the haeders where the data os coming from client 
 2 Response Header = where the data comig From servers 
