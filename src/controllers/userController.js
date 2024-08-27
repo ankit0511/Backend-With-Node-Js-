@@ -18,6 +18,7 @@ const registerUser = asyncHandler(async (req, res) => {
     9. Return Response 
     */
 
+console.log(req.body);
 
     const { fullName, email, userName, password } = req.body
     //   validation part 
@@ -36,7 +37,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     //   checking for Existing user 
-    const existingUser = User.findOne({
+    const existingUser = await  User.findOne({
 
         $or: [{ userName }, { email }]
     })
@@ -46,13 +47,18 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // handling Files using multer 
 
-    const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
+    const avatarLocalPath = req.files?.avatar && req.files.avatar.length > 0 ? req.files.avatar[0].path : undefined;
+    const coverImageLocalPath = req.files?.coverImage && req.files.coverImage.length > 0 ? req.files.coverImage[0].path : undefined;
+    
     if (!avatarLocalPath) {
-        throw new ApiError(400, "Avatar Image is required ")
+        throw new ApiError(400, "Avatar Image is required ");
     }
+    
+    
     // uploading files on cloudinery 
+
+    
     const avatar = await uploadFilesOnCloudiney(avatarLocalPath)
     const coverImage = await uploadFilesOnCloudiney(coverImageLocalPath)
     if (!avatar) {
@@ -65,9 +71,9 @@ const registerUser = asyncHandler(async (req, res) => {
         coverImage: coverImage?.url || "",
         email,
         password,
-        userName: userName.toLowerCase()
+        userName
     })
-    const createdUser = await user.findbyId(user._id).select(
+    const createdUser = await User.findById(user._id).select(
         "-password -refereshToken"
     )
     if (!coverImageLocalPath) {
