@@ -44,6 +44,11 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    // short lived token 
+    accesstoken: {
+        type:String
+    },
+    // long lived token 
     refereshToken: {
         type: String
     }
