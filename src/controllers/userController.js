@@ -6,18 +6,16 @@ import { User } from "../modles/userModel.js"
 import { uploadFilesOnCloudiney } from "../utils/cloudinery.js"
 
 // writng methods to generate access and referesh tokens 
-const generateAccessAndReferehTokens = async (userId) => {
+const generateAccessAndReferehTokens = async(userId) => {
     try {
-        const user = User.findById(userId)
+        const user = await User.findById(userId)
         const accessToekn = user.generateAccesstoken()
         const refereshToken = user.generateRefereshtoken()
         user.refereshToken = refereshToken
         await user.save({ validateBeforeSave: false })
-
-
         return { accessToekn, refereshToken }
     } catch (error) {
-        throw new ApiError(500, "Error While generating access and refereh tokens ");
+        throw new ApiError(500, error,"Error While generating access and refereh tokens ");
 
     }
 }
@@ -110,7 +108,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const { userName, email, password } = req.body
 
-    if (!userName || !email) {
+    if (!userName && !email) {
         throw new ApiError(400, "UserName or Email is required ")
     }
     if (!password) {
