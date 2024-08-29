@@ -6,7 +6,7 @@ import { User } from "../modles/userModel.js"
 import { uploadFilesOnCloudiney } from "../utils/cloudinery.js"
 
 // writng methods to generate access and referesh tokens 
-const generateAccessAndReferehTokens = async(userId) => {
+const generateAccessAndReferehTokens = async (userId) => {
     try {
         const user = await User.findById(userId)
         const accessToekn = user.generateAccesstoken()
@@ -15,7 +15,7 @@ const generateAccessAndReferehTokens = async(userId) => {
         await user.save({ validateBeforeSave: false })
         return { accessToekn, refereshToken }
     } catch (error) {
-        throw new ApiError(500, error,"Error While generating access and refereh tokens ");
+        throw new ApiError(500, error, "Error While generating access and refereh tokens ");
 
     }
 }
@@ -182,8 +182,109 @@ const logOutUser = asyncHandler(async (req, res) => {
         .json(new Apiresponse(200, {}, "User Logged Out "))
 })
 
+
+const changeUserPassword = asyncHandler(async (req, res) => {
+    const { oldPassword, newPassword } = req.body
+    const user = await User.findById(user?._id)
+    const passwordCorrect = await user.isPasswordCorrect(oldPassword)
+
+    if (!passwordCorrect) {
+        throw new ApiError(402, "password did not match ")
+    }
+
+    user.password = newPassword
+    await user.save({ validateBeforeSave: false })
+    return res.status(200)
+        .json(new Apiresponse(200, {}, "Passord Changed SuccessFully "))
+})
+
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+    return res.status(200)
+        .json(200, req.user, "Current user Fetched SuccessFully")
+})
+
+const changeUserDetails = asyncHandler(async (req, res) => {
+    const { fullName, email } = req.body
+
+    if (!fullName && !email) {
+        throw new ApiError(400, "all fields are necessary ")
+    }
+    const user = User.findByIdAndUpdate(req.user?._id, {
+        $set: {
+            fullName,
+            email
+        }
+    },
+        {
+            new: true
+        }).select("-password")
+
+    return res.status(200)
+        .json(new Apiresponse(200, user, "Accounts Details Updated SuccessFully "))
+})
+
+const changeUserAvatar = asyncHandler(async (req, res) => {
+    const avatarLocalpath = req.file?.path
+    if (!avatarLocalpath) {
+        throw new ApiError(400, "avatar is missing ")
+    }
+
+    const avatar = await uploadFilesOnCloudiney(avatarLocalpath)
+
+    if (!avatar.url) {
+        throw new ApiError(400, "Error While uploading the avatar")
+    }
+
+    const user =  await User.findByIdAndUpdate(req.user?._id, {
+        $set: {
+            avatar: avatar.url
+        }
+    }
+        , {
+            new: true
+        }
+    ).select("-password")
+
+    return res.status(200)
+    .json(new Apiresponse(200, user, "Avatar Updated SuccessFully "))
+
+})
+
+
+const changeUserCoverImage  = asyncHandler(async (req, res) => {
+    const coverImageLocalpath = req.file?.path
+    if (!avatarLocalpath) {
+        throw new ApiError(400, "coverImage is missing ")
+    }
+
+    const coverImage = await uploadFilesOnCloudiney(coverImageLocalpath)
+
+    if (!coverImage.url) {
+        throw new ApiError(400, "Error While uploading the coverImage")
+    }
+
+   const user=   await User.findByIdAndUpdate(req.user?._id, {
+        $set: {
+            coverImage: coverImage.url
+        }
+    }
+        , {
+            new: true
+        }
+    ).select("-password")
+    return res.status(200)
+    .json(new Apiresponse(200, user, "Cover Image Updated SuccessFully "))
+
+})
+
 export {
     logOutUser,
     loginUser,
-    registerUser
+    registerUser,
+    changeUserPassword,
+    getCurrentUser,
+    changeUserDetails,
+    changeUserAvatar,
+    changeUserCoverImage
 }
